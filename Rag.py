@@ -9,9 +9,7 @@ from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-
-tokenizer = AutoTokenizer.from_pretrained("EleutherAI/pile-t5-base")
-model = AutoModelForSeq2SeqLM.from_pretrained("EleutherAI/pile-t5-base")
+import shutil
 from langchain.vectorstores import FAISS
 import google.generativeai as genai
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -19,6 +17,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 import os
 import datetime
+from pathlib import Path
 
 #Initial setup
 Time = datetime.datetime.now() # Output: Current date and time in YYYY-MM-DD HH:MM:SS.SSSSSS format
@@ -63,6 +62,7 @@ def vectorstore_universal(text_chunks):
         collection_name="rag-chroma",
         embedding=embeddings, persist_directory="./chroma_db"
     )
+    return vectorstore
 
 
 class GeminiPro:
@@ -70,7 +70,7 @@ class GeminiPro:
         self.user_question = user_question
 
     def conversational_chain_gemini(self):
-        prompt_template = """Answer as correct as possible with complete detail with the provided context.\n\n
+        prompt_template = """Your name is 'PDF AI' developed by Students of Woxsen university.Answer as correct as possible with complete detail with the provided context.\n\n
         Context:\n{context}\n
         Question:\n{question}?\n
 
@@ -114,9 +114,9 @@ class Mistral:
                            embedding_function=embeddings).as_retriever()
         return retriever
     def prompt(self):
-        rag_template = """Answer the question based only on the following context:
+        rag_template = """Answer the question based on the following context:
         {context}
-        Question: {question}
+        Question: {question}  . if not related to context reply '-1' in one letter
         """
         rag_prompt = ChatPromptTemplate.from_template(rag_template)
         return rag_prompt
@@ -184,5 +184,21 @@ class Flan_T5_base:
 
 
 
+def Clear():
+    file_path_1 = Path("chroma_db")  # Replace with the actual file path
+    file_path_2 = Path("faiss_index")
+    # Replace with the actual file path
+
+    # Attempt deletion after potential permission modification
+    try:
+        shutil.rmtree(file_path_2)
+        print("Files deleted successfully.")
+        return True
+    except PermissionError:
+        print(f"Deletion failed due to permission errors. Check file permissions and ownership.")
+        return -1
+    except FileNotFoundError:
+        print(f"One or both files not found. Skipping deletion.")
+        return False
 
 

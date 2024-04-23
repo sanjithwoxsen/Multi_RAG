@@ -1,5 +1,8 @@
+import time
+
 import streamlit as st
 import Rag
+import os
 
 st.title("PDF AI")
 st.header("Chat With Multiple PDF")
@@ -15,7 +18,21 @@ with st.sidebar:
             Rag.vectorstore_universal(text_chunks)
             st.success("Vectorization Complete")
 
-    option = st.selectbox("Select Model", ('Flan-T5-base(Fine-Tuned)', 'Mistral', 'Gemma', 'Gemini-1.5-Pro (API)'))
+    option = st.selectbox("Select Model :", ('Flan-T5-base(Fine-Tuned)', 'Mistral', 'Gemma', 'Gemini-1.5-Pro (API)'))
+    st.write("Clear Knowledge Base :")
+    if st.button("Clear"):
+        info_placeholder = st.empty()
+
+        a = Rag.Clear()
+        if a == True:
+            info_placeholder.success("Cleared KnowledgeBase")
+
+        elif a==-1:
+            info_placeholder.error("permission errors")
+        else:
+            info_placeholder.warning("KnowledgeBase Already Cleared")
+            time.sleep(3)
+            info_placeholder.empty()
 
 # Initialize chat history
 if "messages" not in st.session_state:
