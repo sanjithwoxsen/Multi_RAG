@@ -18,7 +18,7 @@ with st.sidebar:
             Rag.vectorstore_universal(text_chunks)
             st.success("Vectorization Complete")
 
-    option = st.selectbox("Select Model :", ('Flan-T5-base(Fine-Tuned)', 'Mistral', 'Gemma', 'Gemini-1.5-Pro (API)'))
+    option = st.selectbox("Select Model :", ("Gemini-1.5-Pro (API)","Gemma-2B"))
     st.write("Clear Knowledge Base :")
     if st.button("Clear"):
         info_placeholder = st.empty()
